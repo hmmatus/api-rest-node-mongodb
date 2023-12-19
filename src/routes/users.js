@@ -30,7 +30,10 @@ route.get("/", (req, res) => {
 
 route.post("/", (req, res) => {
   let body = req.body;
-  const { error, value } = schema.validate({ name: body.name, email: body.email });
+  const { error, value } = schema.validate({
+    name: body.name,
+    email: body.email,
+  });
   if (!error) {
     let result = createUser(body);
     result
@@ -47,25 +50,33 @@ route.post("/", (req, res) => {
       });
   } else {
     res.status(400).json({
-      error
-    })
+      error,
+    });
   }
 });
 
 route.put("/:email", (req, res) => {
-  let result = updateUser(req.params.email, req.body);
-  result
-    .then((value) => {
-      res.json({
-        value,
+  let body = req.body;
+  const { error, value } = schema.validate({ name: body.name });
+  if (!error) {
+    let result = updateUser(req.params.email, req.body);
+    result
+      .then((value) => {
+        res.json({
+          value,
+        });
+      })
+      .catch((error) => {
+        console.log("🚀 ~ file: users.js:32 ~ result.then ~ error:", error);
+        res.status(400).json({
+          error,
+        });
       });
-    })
-    .catch((error) => {
-      console.log("🚀 ~ file: users.js:32 ~ result.then ~ error:", error);
-      res.status(400).json({
-        error,
-      });
+  } else {
+    res.status(400).json({
+      error,
     });
+  }
 });
 route.delete("/:email", (req, res) => {
   let result = disableUser(req.params.email);
