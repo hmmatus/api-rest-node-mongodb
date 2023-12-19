@@ -2,6 +2,7 @@ const express = require("express");
 const route = express.Router();
 const User = require("../models/user_model");
 const Joi = require("joi");
+const bcrypt = require("bcrypt");
 
 const schema = Joi.object({
   name: Joi.string().min(3).max(30).required(),
@@ -113,7 +114,7 @@ async function createUser(body) {
   let user = new User({
     email: body.email,
     name: body.name,
-    password: body.password,
+    password: bcrypt.hashSync(body.password, 10),
   });
   return await user.save();
 }
