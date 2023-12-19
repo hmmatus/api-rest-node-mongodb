@@ -1,3 +1,5 @@
+const users = require('./src/routes/users');
+const courses = require('./src/routes/courses');
 const express = require('express');
 const mongoose = require('mongoose');
 
@@ -6,6 +8,11 @@ mongoose.connect('mongodb://localhost:27017/APi-Rest-Demo', {useNewUrlParser: tr
 .catch((err) => console.log('No se pudo conectar', err));
 
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+app.use('/api/users', users);
+app.use('/api/courses', courses);
+
 
 const port = process.env.PORT || 3000;
 
