@@ -25,5 +25,5 @@ app.get('/', (req, res) => {
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
-  console.log('Api Restful Ok and executing', process.env.MONGODB_CONNECT_URI);
+  console.log('Api Restful Ok and executing');
 })
