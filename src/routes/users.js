@@ -1,6 +1,18 @@
 const express = require("express");
 const route = express.Router();
 const User = require("../models/user_model");
+const Joi = require("joi");
+
+const schema = Joi.object({
+  name: Joi.string().min(3).max(30).required(),
+
+  password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
+
+  email: Joi.string().email({
+    minDomainSegments: 2,
+    tlds: { allow: ["com", "net"] },
+  }),
+});
 
 route.get("/", (req, res) => {
   let data = getUsers();
@@ -18,19 +30,26 @@ route.get("/", (req, res) => {
 
 route.post("/", (req, res) => {
   let body = req.body;
-  let result = createUser(body);
-  result
-    .then((user) => {
-      res.json({
-        value: user,
+  const { error, value } = schema.validate({ name: body.name, email: body.email });
+  if (!error) {
+    let result = createUser(body);
+    result
+      .then((user) => {
+        res.json({
+          value: user,
+        });
+      })
+      .catch((error) => {
+        console.log("🚀 ~ file: users.js:17 ~ result.then ~ error:", error);
+        res.status(400).json({
+          error,
+        });
       });
+  } else {
+    res.status(400).json({
+      error
     })
-    .catch((error) => {
-      console.log("🚀 ~ file: users.js:17 ~ result.then ~ error:", error);
-      res.status(400).json({
-        error,
-      });
-    });
+  }
 });
 
 route.put("/:email", (req, res) => {
