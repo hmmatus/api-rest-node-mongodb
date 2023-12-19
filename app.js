@@ -15,9 +15,15 @@ app.use(express.urlencoded({extended: true}));
 app.use('/api/users', users);
 app.use('/api/courses', courses);
 
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Welcome to Express node JS Database'
+  })
+})
+
 
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
-  console.log('Api Restful Ok and executing');
+  console.log('Api Restful Ok and executing', process.env.MONGODB_CONNECT_URI);
 })
