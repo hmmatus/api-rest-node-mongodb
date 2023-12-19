@@ -28,8 +28,14 @@ route.get("/", (req, res) => {
     });
 });
 
-route.post("/", (req, res) => {
+route.post("/", async (req, res) => {
   let body = req.body;
+  const userExists = await checkIfUserExists(req.body);
+  if (userExists.status) {
+    return res.status(400).json({
+      msg: userExists.error || 'Email already exists'
+    })
+  }
   const { error, value } = schema.validate({
     name: body.name,
     email: body.email,
@@ -39,7 +45,8 @@ route.post("/", (req, res) => {
     result
       .then((user) => {
         res.json({
-          value: user,
+          name: user.name,
+          email: user.email
         });
       })
       .catch((error) => {
@@ -63,7 +70,8 @@ route.put("/:email", (req, res) => {
     result
       .then((value) => {
         res.json({
-          value,
+          name: value.name,
+          email: value.email
         });
       })
       .catch((error) => {
@@ -83,7 +91,8 @@ route.delete("/:email", (req, res) => {
   result
     .then((value) => {
       res.json({
-        value,
+        name: value.name,
+        email: value.email
       });
     })
     .catch((error) => {
@@ -95,7 +104,8 @@ route.delete("/:email", (req, res) => {
 });
 
 async function getUsers() {
-  let users = await User.find({ status: true });
+  let users = await User.find({ status: true })
+  .select({name: 1, email: 1});
   return users;
 }
 
@@ -132,6 +142,21 @@ async function disableUser(email) {
     { new: true }
   );
   return user;
+}
+
+async function checkIfUserExists(body) {
+  try {
+    const checkUser = await User.findOne({email: body.email});
+    return {
+      status: checkUser,
+    }
+  } catch (error) {
+    return {
+      status: true,
+      error: 'Server error'
+    }
+  }
+
 }
 
 module.exports = route;
