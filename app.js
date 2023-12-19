@@ -3,7 +3,7 @@ const courses = require('./src/routes/courses');
 const express = require('express');
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost:27017/APi-Rest-Demo', {useNewUrlParser: true, useUnifiedTopology: true})
+mongoose.connect('mongodb://localhost:27017/API-Rest-Demo')
 .then(() => console.log('Conectado a mongoDB'))
 .catch((err) => console.log('No se pudo conectar', err));
 
