@@ -3,7 +3,9 @@ const courses = require('./src/routes/courses');
 const express = require('express');
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost:27017/API-Rest-Demo')
+require("dotenv").config();
+
+mongoose.connect(process.env.MONGODB_CONNECT_URI)
 .then(() => console.log('Conectado a mongoDB'))
 .catch((err) => console.log('No se pudo conectar', err));
 
