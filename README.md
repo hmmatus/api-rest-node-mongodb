@@ -3,6 +3,8 @@
 
 ## How to run
 
-`npm run dev` -> for development
-`npm run build` -> to build
-`npm run start` -> to execute after build
+`npm install` to install dependencies
+
+- `npm run dev` for development
+- `npm run build` to build
+- `npm run start`  to execute after build
