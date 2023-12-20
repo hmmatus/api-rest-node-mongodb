@@ -3,6 +3,7 @@ const courses = require('./src/routes/courses');
 const auth = require('./src/routes/auth');
 const express = require('express');
 const mongoose = require('mongoose');
+const treblle = require('@treblle/express')
 
 require("dotenv").config();
 
@@ -16,6 +17,11 @@ app.use(express.urlencoded({extended: true}));
 app.use('/api/users', users);
 app.use('/api/courses', courses);
 app.use('/api/auth', auth);
+app.use(treblle({
+  apiKey: process.env.TREBLLE_API_KEY,
+  projectId: process.env.TREBLLE_PROJECT_ID,
+  additionalFieldsToMask: [],
+}));
 
 app.get('/', (req, res) => {
   res.json({
