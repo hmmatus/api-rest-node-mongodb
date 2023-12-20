@@ -3,6 +3,7 @@ const route = express.Router();
 const User = require("../models/user_model");
 const Joi = require("joi");
 const bcrypt = require("bcrypt");
+const verifiedToken = require("../middlewares/auth");
 
 const schema = Joi.object({
   name: Joi.string().min(3).max(30).required(),
@@ -15,7 +16,7 @@ const schema = Joi.object({
   }),
 });
 
-route.get("/", (req, res) => {
+route.get("/", verifiedToken, (req, res) => {
   let data = getUsers();
   data
     .then((users) => {
@@ -34,8 +35,8 @@ route.post("/", async (req, res) => {
   const userExists = await checkIfUserExists(req.body);
   if (userExists.status) {
     return res.status(400).json({
-      msg: userExists.error || 'Email already exists'
-    })
+      msg: userExists.error || "Email already exists",
+    });
   }
   const { error, value } = schema.validate({
     name: body.name,
@@ -47,7 +48,7 @@ route.post("/", async (req, res) => {
       .then((user) => {
         res.json({
           name: user.name,
-          email: user.email
+          email: user.email,
         });
       })
       .catch((error) => {
@@ -63,7 +64,7 @@ route.post("/", async (req, res) => {
   }
 });
 
-route.put("/:email", (req, res) => {
+route.put("/:email", verifiedToken, (req, res) => {
   let body = req.body;
   const { error, value } = schema.validate({ name: body.name });
   if (!error) {
@@ -72,7 +73,7 @@ route.put("/:email", (req, res) => {
       .then((value) => {
         res.json({
           name: value.name,
-          email: value.email
+          email: value.email,
         });
       })
       .catch((error) => {
@@ -87,13 +88,13 @@ route.put("/:email", (req, res) => {
     });
   }
 });
-route.delete("/:email", (req, res) => {
+route.delete("/:email", verifiedToken, (req, res) => {
   let result = disableUser(req.params.email);
   result
     .then((value) => {
       res.json({
         name: value.name,
-        email: value.email
+        email: value.email,
       });
     })
     .catch((error) => {
@@ -105,8 +106,7 @@ route.delete("/:email", (req, res) => {
 });
 
 async function getUsers() {
-  let users = await User.find({ status: true })
-  .select({name: 1, email: 1});
+  let users = await User.find({ status: true }).select({ name: 1, email: 1 });
   return users;
 }
 
@@ -147,17 +147,16 @@ async function disableUser(email) {
 
 async function checkIfUserExists(body) {
   try {
-    const checkUser = await User.findOne({email: body.email});
+    const checkUser = await User.findOne({ email: body.email });
     return {
       status: checkUser,
-    }
+    };
   } catch (error) {
     return {
       status: true,
-      error: 'Server error'
-    }
+      error: "Server error",
+    };
   }
-
 }
 
 module.exports = route;
