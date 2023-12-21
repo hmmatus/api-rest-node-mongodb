@@ -17,8 +17,7 @@ route.get("/", verifiedToken, (req, res) => {
 });
 
 route.post("/", verifiedToken, (req, res) => {
-  let body = req.body;
-  let result = createCourse(body);
+  let result = createCourse(req);
   result
     .then((course) => {
       res.json({
@@ -65,14 +64,16 @@ route.delete("/:id", verifiedToken, (req, res) => {
 });
 
 async function getCourses() {
-  let courses = await Course.find({ status: true });
+  let courses = await Course.find({ status: true }).populate("author", "name -_id");
   return courses;
 }
 
-async function createCourse(body) {
+async function createCourse(req) {
+  const body = req.body;
   let course = new Course({
     title: body.title,
     description: body.description,
+    author: req.user._id,
   });
   return await course.save();
 }

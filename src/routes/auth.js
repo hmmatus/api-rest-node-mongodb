@@ -19,7 +19,7 @@ route.post("/", (req, res) => {
             msg: "Incorrect user or password",
           });
         const jwtToken = jwt.sign(
-          { data: { _id: data._id, name: data.name, email: data.email } },
+          { user: { _id: data._id, name: data.name, email: data.email } },
           process.env.SEED,
           { expiresIn: process.env.EXPIRATION }
         );
